@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Formularios</title>
+    <style>
+      body {
+        font: bold 11pt Arial;
+        background-color: rgba(123, 94, 198, 0.884);
+        text-align: left;
+        display: grid;
+      }
+    </style>
+  </head>
+  <body>
+    <form id="formulario">
+      <fieldset>
+        <legend>Trabalhe conosco</legend>
+        <div>
+          <label for="nome">Nome:</label><br />
+          <input
+            type="text"
+            name="nome"
+            id="nome"
+            placeholder="informe seu nome"
+          />
+        </div>
+        <div>
+          <label for="id_data">data de nascimento:</label>
+          <input type="date" name="data" id="id_data" />
+          </label>
+        </div>
+        <div>
+          <p>Vagas disponíveis</p>
+          <br />
+          <input type="radio" name="vagas" value="Dev Front-end JR" /><label
+            >Dev Front-end JR</label
+          >
+          <input type="radio" name="vagas" value="Designer UI/UX" /><label
+            >Designer UI/UX</label
+          >
+        </div>
+        <div>
+          <p>Habilidades</p>
+          <br />
+          <input type="checkbox" name="habilidades" value="HTML5" /><label
+            >HTML5</label
+          >
+          <input type="checkbox" name="habilidades" value="Javascript" /><label
+            >Javascript</label
+          >
+          <input type="checkbox" name="habilidades" value="Figma" /><label
+            >Figma</label
+          >
+        </div>
+        <div>
+          <label for="id_textarea">Cursos:</label>
+          <textarea
+            name="cursos_textarea"
+            id="id_textarea"
+            cols="30"
+            rows="4"
+          ></textarea>
+        </div>
+      </fieldset>
+      <div>
+        <button type="submit">Enviar</button>
+      </div>
+    </form>
+    <script type="module">
+      import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.1/firebase-app.js";
+      import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.11.1/firebase-analytics.js";
+      import {
+        getDatabase,
+        ref,
+        push,
+      } from "https://www.gstatic.com/firebasejs/10.11.1/firebase-database.js";
+      import "https://www.gstatic.com/firebasejs/10.11.1/firebase-auth.js"; // Importação do módulo de autenticação
+
+      const firebaseConfig = {
+
+apiKey: "AIzaSyBUaPe7kyvWBZ8aqWlkM17aeywEqCCJHUg",
+
+authDomain: "becaliw-601ed.firebaseapp.com",
+
+databaseURL: "https://becaliw-601ed-default-rtdb.firebaseio.com",
+
+projectId: "becaliw-601ed",
+
+storageBucket: "becaliw-601ed.appspot.com",
+
+messagingSenderId: "15404326594",
+
+appId: "1:15404326594:web:af6db2e59037a696bee55b",
+
+measurementId: "G-9WJ3JVVWFM"
+
+};
+
+
+      const app = initializeApp(firebaseConfig);
+      const analytics = getAnalytics(app);
+      const database = getDatabase();
+
+      let form = document.getElementById("formulario");
+      form.addEventListener("submit", (e) => {
+        e.preventDefault();
+
+        const nome = form["nome"].value;
+        const vaga = form.querySelector('input[name="vagas"]:checked');
+        const habilidades = Array.from(
+          form.querySelectorAll('input[name="habilidades"]:checked')
+        ).map(function (checkbox) {
+          return checkbox.value;
+        });
+        const curso = form["cursos_textarea"].value;
+
+        if (!nome || !vaga || habilidades.length === 0) {
+          alert("Por favor, preencha todos os campos obrigatórios.");
+          return;
+        }
+
+        alert(
+          `Nome: ${nome}\nVaga disponível: ${
+            vaga.value
+          }\nHabilidades: ${habilidades.join(", ")} \n\nCurso: ${curso}`
+        );
+
+        const usersRef = ref(database, "users");
+        push(usersRef, {
+          nome: nome,
+          vaga: vaga.value,
+          habilidades: habilidades,
+          curso: curso,
+        })
+          .then(() => {
+            console.log("Dados enviados com sucesso!");
+          })
+          .catch((error) => {
+            console.error("Erro ao enviar dados:", error);
+          });
+      });
+    </script>
+  </body>
+</html>
